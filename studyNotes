@@ -1,2 +1,62 @@
 ## Page.prototype.route
 route 字段可以获取到当前页面的路径。
+<section class="normal markdown-section">
+                                
+                                <h2 id="文件作用域">文件作用域</h2>
+<p>在 JavaScript 文件中声明的变量和函数只在该文件中有效；不同的文件中可以声明相同名字的变量和函数，不会互相影响。</p>
+<p>通过全局函数 <a href="app.html#getapp"><code>getApp()</code></a> 可以获取全局的应用实例，如果需要全局的数据可以在 <code>App()</code> 中设置，如：</p>
+<pre><code class="lang-javascript"><span class="hljs-comment">// app.js</span>
+App({
+  globalData: <span class="hljs-number">1</span>
+})
+</code></pre>
+<pre><code class="lang-javascript"><span class="hljs-comment">// a.js</span>
+<span class="hljs-comment">// The localValue can only be used in file a.js.</span>
+<span class="hljs-keyword">var</span> localValue = <span class="hljs-string">'a'</span>
+<span class="hljs-comment">// Get the app instance.</span>
+<span class="hljs-keyword">var</span> app = getApp()
+<span class="hljs-comment">// Get the global data and change it.</span>
+app.globalData++
+</code></pre>
+<pre><code class="lang-javascript"><span class="hljs-comment">// b.js</span>
+<span class="hljs-comment">// You can redefine localValue in file b.js, without interference with the localValue in a.js.</span>
+<span class="hljs-keyword">var</span> localValue = <span class="hljs-string">'b'</span>
+<span class="hljs-comment">// If a.js it run before b.js, now the globalData shoule be 2.</span>
+<span class="hljs-built_in">console</span>.log(getApp().globalData)
+</code></pre>
+<h2 id="模块化">模块化</h2>
+<p>可以将一些公共的代码抽离成为一个单独的 js 文件，作为一个模块。模块只有通过 <code>module.exports</code> 或者 <code>exports</code> 才能对外暴露接口。</p>
+<p>需要注意的是：</p>
+<ul>
+<li><code>exports</code> 是 <code>module.exports</code> 的一个引用，因此在模块里边随意更改 <code>exports</code> 的指向会造成未知的错误。所以更推荐开发者采用 <code>module.exports</code> 来暴露模块接口，除非你已经清晰知道这两者的关系。</li>
+<li>小程序目前不支持直接引入 <code>node_modules</code> , 开发者需要使用到 <code>node_modules</code> 时候建议拷贝出相关的代码到小程序的目录中。</li>
+</ul>
+<pre><code class="lang-javascript"><span class="hljs-comment">// common.js</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">sayHello</span>(<span class="hljs-params">name</span>) </span>{
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Hello <span class="hljs-subst">${name}</span> !`</span>)
+}
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">sayGoodbye</span>(<span class="hljs-params">name</span>) </span>{
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Goodbye <span class="hljs-subst">${name}</span> !`</span>)
+}
+
+<span class="hljs-built_in">module</span>.exports.sayHello = sayHello
+exports.sayGoodbye = sayGoodbye
+</code></pre>
+<p>&#8203;在需要使用这些模块的文件中，使用 <code>require(path)</code> 将公共代码引入</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> common = <span class="hljs-built_in">require</span>(<span class="hljs-string">'common.js'</span>)
+Page({
+  helloMINA: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    common.sayHello(<span class="hljs-string">'MINA'</span>)
+  },
+  goodbyeMINA: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    common.sayGoodbye(<span class="hljs-string">'MINA'</span>)
+  }
+})
+</code></pre>
+<h3 id="tips">Tips</h3>
+<ol>
+<li><code>tip</code>: require 暂时不支持绝对路径</li>
+</ol>
+
+                                
+                                </section>
